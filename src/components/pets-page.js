@@ -6,7 +6,7 @@ export default class PetsPage extends Component {
   static contextType = petsContext
 
   adoptDog = () => {
-    fetch('http://localhost:8000/api/dog', 
+    fetch('https://petfulzoldavid.herokuapp.com/api/dog', 
     {
       method: 'delete'
     })
@@ -19,7 +19,7 @@ export default class PetsPage extends Component {
   }
 
   adoptCat = () => {
-    fetch('http://localhost:8000/api/cat', 
+    fetch('https://petfulzoldavid.herokuapp.com/api/cat', 
     {
       method: 'delete'
     })

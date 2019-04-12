@@ -8,10 +8,10 @@ import petsContext from './context-pets'
 class App extends Component {
   static contextType = petsContext;
   componentDidMount(){
-    fetch('http://localhost:8000/api/dog')
+    fetch('https://petfulzoldavid.herokuapp.com/api/dog')
       .then(res => res.json())
       .then(dogs => this.context.setDogs(dogs));
-      fetch('http://localhost:8000/api/cat')
+      fetch('https://petfulzoldavid.herokuapp.com/api/cat')
       .then(res => res.json())
       .then(cats => this.context.setCats(cats));  }
   
