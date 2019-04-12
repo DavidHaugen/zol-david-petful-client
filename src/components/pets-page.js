@@ -5,6 +5,10 @@ import './pets.css'
 export default class PetsPage extends Component {
   static contextType = petsContext
 
+  state = {
+    count: null
+  }
+
   adoptDog = () => {
     fetch('https://petfulzoldavid.herokuapp.com/api/dog', 
     {
@@ -13,8 +17,10 @@ export default class PetsPage extends Component {
     .then(res => res.json())
     .then(res => {
       this.context.adoptDog();
-      this.context.cycleUser();})
-      // this.context.users.push(this.context.users.shift());})
+      // this.context.cycleUser();
+      const queue = this.context.userQueue;
+      queue.enqueue(queue.dequeue());
+    })
     .catch(err => this.context.setError(err))
   }
 
@@ -26,25 +32,52 @@ export default class PetsPage extends Component {
     .then(res => res.json())
     .then(res => {
       this.context.adoptCat();
-      this.context.cycleUser();})
-      // this.context.users.push(this.context.users.shift());})
+      // this.context.cycleUser();
+      const queue = this.context.userQueue;
+      queue.enqueue(queue.dequeue());
+    })
     .catch(err => this.context.setError(err))
   }
 
   componentDidMount(){
     setInterval(() => {
-        this.context.cycleUser()
+        // this.context.cycleUser()
+        const queue = this.context.userQueue;
+        queue.enqueue(queue.dequeue());
+        this.userPosition()
     }, 3000);
   }
 
+  userPosition = () => {
+    const queue = this.context.userQueue;
+
+    if(queue.first === null){
+      return [];
+    }
+    let curr = queue.first 
+    let count = 1;
+    while(curr.value !== "YOU"){
+      count++;
+      curr = curr.next;
+    }
+    this.setState({count});
+  }
+
+  renderPetInfo = (pet) => {
+    return (
+    <>
+      <p>Description of the pet: {pet.imageDescription}</p>
+      <p>Name: {pet.name}</p>
+      <p>Sex: {pet.sex}</p>
+      <p>Age: {pet.age}</p>
+      <p>Breed: {pet.breed}</p>
+      <p>Story: {pet.story}</p>
+    </>
+    )
+  }
+
     render(){
-      // Hacky users implementation for now:
-      const users = this.context.users
-
-      let html = ''
-      users.forEach(user => html += ` - ${user} `)
-      html += ' -'
-
+      let first = this.context.userQueue !== null ? this.context.userQueue.first.value : '';
       let currentCat;
       if(this.context.cats){
         currentCat = this.context.cats[0];
@@ -67,16 +100,19 @@ export default class PetsPage extends Component {
                 <div className="cats">
                   <h1>Adopt this cat</h1>
                   <img className="petPic" src={currentCat ? currentCat.imageURL : null} alt="cat"/>
-                  {this.context.users[0] === 'YOU' ? enabledCatButton : disabledCatButton}
+                  {currentCat !== undefined && this.renderPetInfo(currentCat)}
+                  {first === 'YOU' ? enabledCatButton : disabledCatButton}
                 </div>
                 <div className="dogs">
                   <h1>Adopt this dog</h1>
                   <img className="petPic" src={currentDog ? currentDog.imageURL : null} alt="dog"/>
-                  {this.context.users[0] === 'YOU' ? enabledDogButton : disabledDogButton}                </div>
+                  {currentDog !== undefined && this.renderPetInfo(currentDog)}
+                  {first === 'YOU' ? enabledDogButton : disabledDogButton}
+                </div>
               </div>
               <div className="users">
-                <p>User order:</p>
-                <div>{html}</div>
+                <div>{this.context.userQueue !== null && this.context.userQueue.first.value} is currently first in line for adopting a pet.</div>
+                <div>You are {this.state.count} in line.</div>
               </div>
             </div>
         )
