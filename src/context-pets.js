@@ -10,7 +10,10 @@ const PetsContext = React.createContext({
     setDogs: () => {},
     setCats: () => {},
     setError: () => {},
-    clearError: () => {}
+    clearError: () => {},
+    adoptDog: () => {},
+    cycleUser: () => {},
+    adoptCat: () => {}
 })
 
 export default PetsContext;
@@ -19,8 +22,8 @@ export class PetsProvider extends Component{
     state = {
         dogs: [],
         cats: [],
-        users: [],
-        user: '',
+        users: ['Zol', 'David', 'YOU', 'Drew', 'Thinkful'],
+        user: 'YOU',
         error: null
     }
 
@@ -37,11 +40,27 @@ export class PetsProvider extends Component{
     }
 
     setError = (error) => {
-        this.setState(error)
+        this.setState({error})
     }
 
     clearError = ()=>{
         this.setError(null)
+    }
+
+    adoptDog = () => {
+      let dogs = this.state.dogs.slice(1);
+      this.setState({dogs})
+    }
+
+    cycleUser = () => {
+      let users = this.state.users.slice();
+      users.push(users.shift());
+      this.setState({users})
+    }
+
+    adoptCat = () => {
+      let cats = this.state.cats.slice(1);
+      this.setState({cats})
     }
 
 
@@ -57,7 +76,10 @@ export class PetsProvider extends Component{
             setDogs: this.setDogs,
             setCats: this.setCats,
             setError: this.setError,
-            clearError: this.clearError
+            clearError: this.clearError,
+            adoptDog: this.adoptDog,
+            cycleUser: this.cycleUser,
+            adoptCat: this.adoptCat
         }
         return (
             <PetsContext.Provider value={contextValue}>
